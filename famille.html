@@ -124,7 +124,8 @@ figcaption b{font-style:normal;font-weight:600;color:var(--ink-2)}
 }
 .shard.lost{
   background-color:var(--paper);
-  box-shadow:inset 0 0 0 1px var(--line);
+  border:1.5px dashed var(--accent);
+  opacity:.75;
 }
 .shard{
   background-repeat:no-repeat;
@@ -241,22 +242,17 @@ figcaption b{font-style:normal;font-weight:600;color:var(--ink-2)}
     }
     return o;
   }
-  // Listes calculees a la construction de la page : uniquement des fragments
-  // de decor (paillasse, appareils, mur). Le visage n'est jamais touche.
-  var PAIRS = (COLS === 6) ? __PAIRS6__ : __PAIRS4__;   // [source, voisine qui recoit la copie]
-  var LOSTS = (COLS === 6) ? __LOST6__ : __LOST4__;
-  function pick(a){ return a[(Math.random() * a.length) | 0]; }
-
   // Reassemblage : correct, sauf un fragment perdu et un fragment duplique
-  // en double minute : exactement ce que laisse une chromothripsis.
+  // en double minute. Les deux portent sur le decor (la paillasse en bas a
+  // gauche, le mur en haut a droite) : le visage n'est jamais touche.
+  var DUP  = (COLS === 6) ? [18, 12] : [8, 4];   // [source, case qui recoit la copie]
+  var LOST = (COLS === 6) ? 5 : 3;
+
   function ordered(){
     var o = [];
     for (var i = 0; i < N; i++) o.push(i);
-    var pr = pick(PAIRS);
-    o[pr[1]] = pr[0];
-    var lost = -1, guard = 0;
-    do { lost = pick(LOSTS); guard++; } while ((lost === pr[0] || lost === pr[1]) && guard < 40);
-    return { order: o, lost: lost };
+    o[DUP[1]] = DUP[0];
+    return { order: o, lost: LOST };
   }
   place(shuffled(), true);
 
